@@ -74,7 +74,7 @@ class EventEmitter(object):
         self._events[event][k] = v
 
     def _emit_run(self, f, args, kwargs):
-        f(*args, **kwargs)
+        return f(*args, **kwargs)
 
     def _emit_handle_potential_error(self, event, error):
         if event == 'error':
@@ -96,9 +96,15 @@ class EventEmitter(object):
         ``data('00101001')'``.
         """
         handled = False
+        capture_return_value = kwargs.get( "capture_return_value", False )
+        if capture_return_value:
+            del kwargs["capture_return_value"]
 
         for f in list(self._events[event].values()):
-            self._emit_run(f, args, kwargs)
+            ret = self._emit_run(f, args, kwargs)
+            if capture_return_value:
+                return ret
+
             handled = True
 
         if not handled:

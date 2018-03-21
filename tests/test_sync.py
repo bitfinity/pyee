@@ -27,6 +27,17 @@ def test_emit_sync():
 
     call_me.assert_called_once()
 
+def test_emit_single_listener_return():
+    """Get return value if single and flag set"""
+    ee = EventEmitter()
+    retvalue = "123456"
+
+    @ee.on("return_something")
+    def return_something(whattoreturn):
+        return whattoreturn
+
+    ret = ee.emit("return_something", retvalue, capture_return_value=True)
+    assert ret == retvalue
 
 def test_emit_error():
     """Errors raise with no event handler, otherwise emit on handler"""
